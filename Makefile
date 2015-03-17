@@ -11,7 +11,7 @@ JSON_C_DIR=/usr
 CFLAGS += -I$(JSON_C_DIR)/include/json-c
 LDFLAGS+= -L$(JSON_C_DIR)/lib -ljson-c
 
-all: init jsonread jsonwrite
+all: init jsonread jsonwrite jsonpp
 	@echo "\n* Compiled all targets for $(THISPROJECT) project."
 	@exit 0
 
@@ -29,9 +29,15 @@ jsonwrite: init $(SRCPATH)/jsonwrite.c
 	@gcc -O3 $(SRCPATH)/jsonwrite.c $(SRCPATH)/utils.c -ljson-c -std=c99 -o $(BUILDDIR)/jsonwrite
 	@echo "* Build finished: 'jsonwrite'"
 	@exit 0
+
+jsonpp: init $(SRCPATH)/jsonpp.c
+	@gcc -O3 $(SRCPATH)/jsonpp.c $(SRCPATH)/utils.c -ljson-c -std=c99 -o $(BUILDDIR)/jsonpp
+	@echo "* Build finished: 'jsonpp'"
+	@exit 0
 strip: 
 	@if [ -f jsonread ]; then  strip "$(BUILDDIR)/jsonread"; echo "* Stripped jsonread"; fi
 	@if [ -f jsonwrite ]; then  strip "$(BUILDDIR)/jsonwrite"; echo "* Stripped jsonwrite"; fi
+	@if [ -f jsonpp ]; then  strip "$(BUILDDIR)/jsonpp"; echo "* Stripped jsonpp"; fi
 	@echo "\n* Stripped all built files."
 	@exit 0
 

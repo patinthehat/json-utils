@@ -33,6 +33,17 @@ void show_usage(const char* appName, int exitApp, int exitCode) {
     exit(exitCode);
 }
 
+void file_write(char * filename, char * data)
+{
+  FILE* fp;
+  fp = fopen(filename, "w+");
+  if (fp == NULL)
+    show_message("Failed to open file for writing.", TRUE, -3);
+
+  fprintf(fp, "%s", data);
+  fclose(fp);
+}
+
 int main (int argc, char *argv[]) {
   //char * string = "{'sitename' : 'joys of programming', 'tags' : [ 'c' , 'c++', 'java', 'PHP' ], 'details': { 'name' : 'Joys of Programming', 'Number of Posts' : 10 } }";
   // json_object * jobj = json_tokener_parse(string);
@@ -41,22 +52,20 @@ int main (int argc, char *argv[]) {
     show_usage(argv[0], TRUE, -1);
 
   if (file_exists(argv[1]) != 1) {
-    //show_message("File not found.", TRUE, -2);
-    FILE* fp;
-    fp = fopen(argv[1], "w+");
-    if (fp == NULL)
-      show_message("Failed to open file for writing.", TRUE, -3);
-
-    fprintf(fp, "%s", "{ }");
-    fclose(fp);
-
+    file_write(argv[1], "{ }");
   }
 
   FILE * fp;
-  const char * cNewValue = argv[3];
+  char * cNewValue = argv[3];
   json_object * jobj  = json_object_from_file(argv[1]);
   json_object * jo    = json_object_new_string(cNewValue);
   
+  if (strncmp(cNewValue, "{", 1)==0) {
+    file_write("~TEMPDATA1.json", cNewValue);
+    jo = json_object_from_file("~TEMPDATA1.json");
+    unlink("~TEMPDATA1.json");
+  }
+
   json_object_object_add(jobj, argv[2], jo);
   //json_object_object_foreach(jobj, key, val) { }
   
