@@ -3,40 +3,41 @@
 
 THISPROJECT="json-utils"
 THISDATE=`date`
+SRCPATH=src
+BUILDDIR=build
+INSTALLDIR=~/scripts
 
 JSON_C_DIR=/usr
 CFLAGS += -I$(JSON_C_DIR)/include/json-c
 LDFLAGS+= -L$(JSON_C_DIR)/lib -ljson-c
 
 all: init jsonread jsonwrite
-#	@make git-getdescription
-#	@make git-setdescription
 	@echo "\n* Compiled all targets for $(THISPROJECT) project."
 	@exit 0
 
-jsontest: init jsontest.c
-	@gcc -O3 jsontest.c utils.c -ljson-c -std=c99 -o jsontest
+jsontest: init $(SRCPATH)/jsontest.c
+	@gcc -O3 $(SRCPATH)/jsontest.c $(SRCPATH)/utils.c -ljson-c -std=c99 -o $(BUILDDIR)/jsontest
 	@echo "* Build finished: 'jsontest'"
 	@exit 0
 
-jsonread: init jsonread.c
-	@gcc -O3 jsonread.c utils.c  -ljson-c -std=c99 -o jsonread
+jsonread: init $(SRCPATH)/jsonread.c
+	@gcc -O3 $(SRCPATH)/jsonread.c $(SRCPATH)/utils.c  -ljson-c -std=c99 -o $(BUILDDIR)/jsonread
 	@echo "* Build finished: 'jsonread'"
 	@exit 0
 
-jsonwrite: init jsonwrite.c
-	@gcc -O3 jsonwrite.c utils.c -ljson-c -std=c99 -o jsonwrite
+jsonwrite: init $(SRCPATH)/jsonwrite.c
+	@gcc -O3 $(SRCPATH)/jsonwrite.c $(SRCPATH)/utils.c -ljson-c -std=c99 -o $(BUILDDIR)/jsonwrite
 	@echo "* Build finished: 'jsonwrite'"
 	@exit 0
 strip: 
-	@if [ -f jsonread ]; then  strip "jsonread"; echo "* Stripped jsonread"; fi
-	@if [ -f jsonwrite ]; then  strip "jsonwrite"; echo "* Stripped jsonwrite"; fi
+	@if [ -f jsonread ]; then  strip "$(BUILDDIR)/jsonread"; echo "* Stripped jsonread"; fi
+	@if [ -f jsonwrite ]; then  strip "$(BUILDDIR)/jsonwrite"; echo "* Stripped jsonwrite"; fi
 	@echo "\n* Stripped all built files."
 	@exit 0
 
 install: 
-	@if [ -f jsonread ]; then  cp jsonread ~/scripts/jsonread; echo "* Installed jsonread"; fi
-	@if [ -f jsonwrite ]; then  cp jsonwrite ~/scripts/jsonwrite; echo "* Installed jsonwrite"; fi
+	@if [ -f jsonread ]; then  cp $(BUILDDIR)/jsonread $(INSTALLDIR)/jsonread; echo "* Installed jsonread"; fi
+	@if [ -f jsonwrite ]; then  cp $(BUILDDIR)/jsonwrite $(INSTALLDIR)/jsonwrite; echo "* Installed jsonwrite"; fi
 	@echo "\n* Installed all built files."
 	@exit 0
 ##	
