@@ -11,7 +11,7 @@ JSON_C_DIR=/usr
 CFLAGS += -I$(JSON_C_DIR)/include/json-c
 LDFLAGS+= -L$(JSON_C_DIR)/lib -ljson-c
 
-all: init jsonread jsonwrite jsonpp
+all: init jsonread jsonwrite jsonpp jsonsemver
 	@echo "\n* Compiled all targets for $(THISPROJECT) project."
 	@exit 0
 
@@ -34,16 +34,24 @@ jsonpp: init $(SRCPATH)/jsonpp.c
 	@gcc -O3 $(SRCPATH)/jsonpp.c $(SRCPATH)/utils.c -ljson-c -std=c99 -o $(BUILDDIR)/jsonpp
 	@echo "* Build finished: 'jsonpp'"
 	@exit 0
+
+jsonsemver: init $(SRCPATH)/jsonsemver.c
+	@gcc -O3 $(SRCPATH)/$@.c $(SRCPATH)/utils.c  -ljson-c -std=c99 -o $(BUILDDIR)/$@
+	@echo "* Build finished: '$@'"
+	@exit 0
+
 strip: 
-	@if [ -f jsonread ]; then  strip "$(BUILDDIR)/jsonread"; echo "* Stripped jsonread"; fi
-	@if [ -f jsonwrite ]; then  strip "$(BUILDDIR)/jsonwrite"; echo "* Stripped jsonwrite"; fi
-	@if [ -f jsonpp ]; then  strip "$(BUILDDIR)/jsonpp"; echo "* Stripped jsonpp"; fi
+	@if [ -f $(BUILDDIR)/jsonread ]; then  strip "$(BUILDDIR)/jsonread"; echo "* Stripped jsonread"; fi
+	@if [ -f $(BUILDDIR)/jsonwrite ]; then  strip "$(BUILDDIR)/jsonwrite"; echo "* Stripped jsonwrite"; fi
+	@if [ -f $(BUILDDIR)/jsonpp ]; then  strip "$(BUILDDIR)/jsonpp"; echo "* Stripped jsonpp"; fi
+	@if [ -f $(BUILDDIR)/jsonsemver ]; then  strip "$(BUILDDIR)/jsonsemver"; echo "* Stripped jsonsemver"; fi
 	@echo "\n* Stripped all built files."
 	@exit 0
 
 install: 
-	@if [ -f jsonread ]; then  cp $(BUILDDIR)/jsonread $(INSTALLDIR)/jsonread; echo "* Installed jsonread"; fi
-	@if [ -f jsonwrite ]; then  cp $(BUILDDIR)/jsonwrite $(INSTALLDIR)/jsonwrite; echo "* Installed jsonwrite"; fi
+	@if [ -f $(BUILDDIR)/jsonread ]; then  cp $(BUILDDIR)/jsonread $(INSTALLDIR)/jsonread; echo "* Installed jsonread"; fi
+	@if [ -f $(BUILDDIR)/jsonwrite ]; then  cp $(BUILDDIR)/jsonwrite $(INSTALLDIR)/jsonwrite; echo "* Installed jsonwrite"; fi
+	@if [ -f $(BUILDDIR)/jsonsemver ]; then  cp $(BUILDDIR)/jsonsemver $(INSTALLDIR)/jsonsemver; echo "* Installed jsonsemver"; fi
 	@echo "\n* Installed all built files."
 	@exit 0
 ##	

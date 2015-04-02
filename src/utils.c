@@ -43,3 +43,13 @@ int str_is_integer(char * input)
   }
   return TRUE;
 }
+
+void write_data_to_file(char * filename, const char * data)
+{
+  FILE * fp;
+  fp = fopen(filename, "w");
+  if (fp == NULL)
+    show_message("Failed to open file for writing.", TRUE, -3);
+  fprintf(fp, "%s", data);
+  fclose(fp);
+}

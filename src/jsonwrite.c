@@ -1,10 +1,10 @@
 /**
  *
- * jsonread --
+ * jsonwrite --
  *    reads and outputs a field from a specified json file.
  *
  * usage:
- *    jsonread [filename] [fieldname]
+ *    jsonwrite [filename] [fieldname] [new-value]
  *
  */
 
