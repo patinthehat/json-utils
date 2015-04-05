@@ -6,6 +6,7 @@ THISDATE=`date`
 SRCPATH=src
 BUILDDIR=build
 INSTALLDIR=~/scripts
+UTILFILES=$(SRCPATH)/utils.c $(SRCPATH)/util_files.c $(SRCPATH)/utils_json.c $(SRCPATH)/version_info.c
 
 JSON_C_DIR=/usr
 CFLAGS += -I$(JSON_C_DIR)/include/json-c
@@ -36,7 +37,7 @@ jsonpp: init $(SRCPATH)/jsonpp.c
 	@exit 0
 
 jsonsemver: init $(SRCPATH)/jsonsemver.c
-	@gcc -O3 $(SRCPATH)/$@.c $(SRCPATH)/utils.c  -ljson-c -std=c99 -o $(BUILDDIR)/$@
+	@gcc -O3 $(SRCPATH)/$@.c $(UTILFILES) -ljson-c -std=c99 -o $(BUILDDIR)/$@
 	@echo "* Build finished: '$@'"
 	@exit 0
 

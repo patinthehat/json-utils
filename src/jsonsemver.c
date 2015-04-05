@@ -15,160 +15,84 @@
 #include <ctype.h>
 #include <getopt.h>
 
+#include "consts.h"
+
 #include "utils.h"
+#include "util_files.h"
+#include "utils_json.h"
+#include "version_info.h"
 
-
-
-typedef struct version_info_s {
-  int major;
-  int minor;
-  int patch;
-  char * prerelease;
-  char * metadata;
-} version_info;
+#define JSONSEMVER_VERSION = "1.2.0"
 
 typedef struct app_settings_s {
   int incrementBy;
   char * fieldName;
 } app_settings;
 
-version_info * new_version_info()
-{
-  version_info vi;
-  vi.prerelease = malloc(64);
-  vi.metadata   = malloc(64);
 
-  memset(&vi, 0, sizeof(int)*3);    //zerofill major,minor,patch
-  memset(vi.prerelease, 0, 64);
-  memset(vi.metadata, 0, 64);
-  return &vi;
+
+char * str_new(char ** str, int size, int zeroFill)
+{
+  *str = malloc(size);
+  if (zeroFill == 1)
+    memset(*str, 0, size);
+  return *str;
 }
 
-void free_version_info(version_info * vi)
+void string_free(char ** str)
 {
-  if (vi) {
-    free(vi->metadata);
-    free(vi->prerelease);
-  }
+  if (*str)
+    free(*str);
 }
 
-void debug_version_info(version_info * vi)
+void str_set(char ** str, char * strCopy)
 {
-  printf("struct version_info {\n\t major = %d;\n\t minor = %d;\n\t patch = %d;\n}\n", vi->major, vi->minor, vi->patch);
+  sprintf(*str, "%s", strCopy);
 }
 
-
-json_object* get_object_item(json_object* jo, char * name)
+char * str_new_set(char ** str, int size, char * strCopy)
 {
-  json_object_object_foreach(jo, key, val) {
-    if (strcmp(key, name)==0) {
-      return val;
-    }
-  }
-  return FALSE;
+  char * s = str_new(str, size, 1);
+  str_set(str, strCopy);
+  return s;
 }
-
-int json_object_has_item(json_object* jo, char* name)
-{
-  json_object_object_foreach(jo, key, val) {
-    if (strcmp(key, name)==0) {
-      return TRUE;
-    }
-  }
-  return FALSE;
-}
-
-
-void version_info_increment(version_info * vi, char * field, int incrementBy)
-{
-  if (strcmp(field, "patch")==0) {
-    vi->patch = vi->patch + incrementBy;
-    if (vi->patch >= 100)
-      field = "minor";
-  }
-
-  if (strcmp(field, "minor")==0) {
-    vi->minor = vi->minor + incrementBy;
-    if (vi->minor >= 100)
-      field = "major";
-    vi->patch = 0;
-  }
-
-  if (strcmp(field, "major")==0) {
-    vi->major = vi->major + incrementBy;
-    vi->minor = 0;
-    vi->patch = 0;
-  }
-
-  if (vi->major < 0)
-    vi->major = 0;
-
-  if (vi->minor < 0)
-    vi->minor = 0;
-
-  if (vi->patch < 0)
-    vi->patch = 0;
-}
-
 
 int main (int argc, char *argv[])
 {
   int aflag = 0;
   int bflag = 0;
   char *cvalue = NULL;
+  char * cfn;
+  char * fieldToIncrement;
   const char* cfilename   = argv[1];
-  char * cfn;// = cfilename;
   int index;
   int c;
 
-
-  cfn = malloc(4096);
-  memset(cfn, 0, 4096);
-
-  sprintf(cfn, "%s", argv[1]);
-
-  json_object* jobj       = json_object_from_file(cfilename);
-  json_object* jlast;
   version_info vi;
+  version_info * vip = &vi;
 
-  memset(&vi, 0, sizeof(vi));
-
-  if (json_object_has_item(jobj, "major")) {
-    jlast = get_object_item(jobj, "major");
-    vi.major = atoi(json_object_get_string(jlast));
-    if (vi.major < 0)
-      vi.major = 0;
-  }
-
-  if (json_object_has_item(jobj, "minor")) {
-    jlast = get_object_item(jobj, "minor");
-    vi.minor = atoi(json_object_get_string(jlast));
-    if (vi.minor < 0)
-      vi.minor = 0;
-  }
-
-  if (json_object_has_item(jobj, "patch")) {
-    jlast = get_object_item(jobj, "patch");
-    vi.patch = atoi(json_object_get_string(jlast));
-    if (vi.patch < 0)
-      vi.patch = 0;
-  }
-
+  json_object* jobj = json_object_from_file(cfilename);
   json_object * joPatch;
   json_object * joMinor;
   json_object * joMajor;
-  char * fieldToIncrement;
 
-  fieldToIncrement = malloc(16);
-  memset(fieldToIncrement, 0, 16);
+//-------------------------
+
+  str_new_set(&cfn, 4096, argv[1]);
+  str_new(&fieldToIncrement, 16, 1);
+
+  zero_fill((void**)&vip, sizeof(vi));
+
+  version_info_load_major(&vi, &jobj);
+  version_info_load_minor(&vi, &jobj);
+  version_info_load_patch(&vi, &jobj);
 
   if (argc >= 3) {
-    sprintf(fieldToIncrement, "%s", argv[2]);
-    //fieldToIncrement = argv[2];
+    str_set(&fieldToIncrement, argv[2]);
   }
 
   if (argc == 2) {
-    sprintf(fieldToIncrement, "%s", "patch");
+    str_set(&fieldToIncrement, "patch");
   }
 
   version_info_increment(&vi, fieldToIncrement, 1);
@@ -181,17 +105,17 @@ int main (int argc, char *argv[])
   json_object_object_add(jobj, "minor", joMinor);
   json_object_object_add(jobj, "major", joMajor);
 
-  write_data_to_file(cfn, json_object_to_json_string_ext(jobj, JSON_C_TO_STRING_PLAIN));
+  file_write_data(cfn, json_object_to_json_string_ext(jobj, JSON_C_TO_STRING_PLAIN));
 
   debug_version_info(&vi);
 
-  free(fieldToIncrement);
-  free(cfn);
+  string_free(&fieldToIncrement);
+  string_free(&cfn);
 
   return 0;
 
   opterr = 0;
-  while ((c = getopt (argc, argv, "abc:")) != -1)
+  while ((c = getopt (argc, argv, "abf:")) != -1)
     switch (c)
       {
       case 'a':
