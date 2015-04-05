@@ -32,6 +32,25 @@ typedef struct app_settings_s {
   char * fieldName;
 } app_settings;
 
+version_info * new_version_info()
+{
+  version_info vi;
+  vi.prerelease = malloc(64);
+  vi.metadata   = malloc(64);
+
+  memset(&vi, 0, sizeof(int)*3);    //zerofill major,minor,patch
+  memset(vi.prerelease, 0, 64);
+  memset(vi.metadata, 0, 64);
+  return &vi;
+}
+
+void free_version_info(version_info * vi)
+{
+  if (vi) {
+    free(vi->metadata);
+    free(vi->prerelease);
+  }
+}
 
 void debug_version_info(version_info * vi)
 {

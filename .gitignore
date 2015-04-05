@@ -4,3 +4,4 @@ build/**
 *.json
 *.o
 *.a
+changes.txt
