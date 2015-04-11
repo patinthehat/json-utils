@@ -106,6 +106,16 @@ void version_info_load_field(version_info * vi, json_object**jobj, char * fieldN
   }
 }
 
+void version_info_load_field_str(version_info * vi, json_object**jobj, char * fieldName, char ** field)
+{
+  json_object* jlast;
+  if (json_object_has_item(*jobj, fieldName)) {
+    jlast = get_object_item(*jobj, fieldName);
+    *field = json_object_get_string(jlast);
+
+  }
+}
+
 void version_info_load_major(version_info * vi, json_object**jobj)
 {
   version_info_load_field(vi, jobj, "major", &vi->major);

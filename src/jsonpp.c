@@ -22,6 +22,7 @@
 # include <unistd.h>
 
 #include "utils.h"
+#include "util_files.h"
 
 void show_usage(const char* appName, int exitApp, int exitCode) {
   char* usageStr;

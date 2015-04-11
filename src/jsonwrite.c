@@ -1,10 +1,10 @@
 /**
  *
  * jsonwrite --
- *    reads and outputs a field from a specified json file.
+ *    writes data to a specified json file.
  *
  * usage:
- *    jsonwrite [filename] [fieldname] [new-value]
+ *    jsonwrite <filename> <fieldname, fieldname, ...> new-value
  *
  */
 
@@ -22,11 +22,13 @@
 # include <unistd.h>
 
 #include "utils.h"
+#include "utils_json.h"
+#include "util_files.h"
 
 void show_usage(const char* appName, int exitApp, int exitCode) {
   char* usageStr;
   usageStr = malloc(strlen(appName)+64);
-  sprintf(usageStr, "Usage: %s [filename] [field] [new-value]", appName);
+  sprintf(usageStr, "Usage: %s [filename] [field, field, ...] [new-value]", appName);
   show_message(usageStr, FALSE, 0);
   free(usageStr);
   if (exitApp)
@@ -45,37 +47,50 @@ void file_write(char * filename, char * data)
 }
 
 int main (int argc, char *argv[]) {
-  //char * string = "{'sitename' : 'joys of programming', 'tags' : [ 'c' , 'c++', 'java', 'PHP' ], 'details': { 'name' : 'Joys of Programming', 'Number of Posts' : 10 } }";
-  // json_object * jobj = json_tokener_parse(string);
+
+  char * filename;
 
   if (argc < 4 || argc < 3 || argc < 2 || argc < 1)
     show_usage(argv[0], TRUE, -1);
 
-  if (file_exists(argv[1]) != 1) {
-    file_write(argv[1], "{ }");
+  filename = argv[1];
+
+  if (file_exists(filename) != 1) {
+    file_write(filename, "{ }");
   }
 
-  FILE * fp;
-  char * cNewValue = argv[3];
-  json_object * jobj  = json_object_from_file(argv[1]);
-  json_object * jo    = json_object_new_string(cNewValue);
-  
-  if (strncmp(cNewValue, "{", 1)==0) {
-    file_write("~TEMPDATA1.json", cNewValue);
-    jo = json_object_from_file("~TEMPDATA1.json");
-    unlink("~TEMPDATA1.json");
+  char * cNewValue = argv[argc-1];
+  json_object * jobj  = json_object_from_file(filename);
+  json_object * jobj2 = jobj;
+  json_object * jLast;
+  json_object * jobj3;
+
+  int i;
+  char *key;
+
+  //skip the first argument and the last argument
+  for(i = 2; i < argc-1; i++) {
+    key = argv[i];
+    jLast = jobj2;
+
+    if (i == argc-2) {
+      jobj3 = json_object_new_string(argv[argc-1]);
+      json_object_get(jobj3);
+      json_object_object_add(jLast, key, (jobj3));
+      json_object_put(jobj3);
+      break;
+    }
+
+    //this gets an existing field, if it exists, otherwise creates a new one.
+    if (json_object_object_get_ex(jLast, key, &jobj2) != TRUE) {
+      jobj2 = json_object_new_object();
+    }
+
+    json_object_object_add(jLast, key, json_object_get(jobj2));
   }
 
-  json_object_object_add(jobj, argv[2], jo);
-  //json_object_object_foreach(jobj, key, val) { }
-  
-  fp = fopen(argv[1], "w");
-  if (fp == NULL)
-    show_message("Failed to open file for writing.", TRUE, -3);
-  
-  fprintf(fp, "%s", json_object_to_json_string_ext(jobj, JSON_C_TO_STRING_PLAIN));
-  fclose(fp);
-  
+  json_object_to_file(filename, jobj);
+
   exit(0);
 }
 

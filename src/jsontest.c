@@ -8,7 +8,7 @@
  *
  */
 
-#include <json/json.h>
+#include <json-c/json.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -22,6 +22,7 @@
 # include <unistd.h>
 
 #include "utils.h"
+#include "util_files.h"
 
 void show_usage(const char* appName, int exitApp, int exitCode) {
   char* usageStr;

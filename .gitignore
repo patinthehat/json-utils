@@ -5,3 +5,6 @@ build/**
 *.o
 *.a
 changes.txt
+
+build.sh
+b

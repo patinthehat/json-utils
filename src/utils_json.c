@@ -37,3 +37,8 @@ int json_object_has_item(json_object* jo, char* name)
   }
   return FALSE;
 }
+
+
+int json_object_is_array(json_object* jo) {
+  return (json_object_is_type(jo, json_type_array) ? TRUE : FALSE);
+}

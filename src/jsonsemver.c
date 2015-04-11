@@ -22,7 +22,7 @@
 #include "utils_json.h"
 #include "version_info.h"
 
-#define JSONSEMVER_VERSION = "1.2.0"
+#define JSONSEMVER_VERSION = "1.2.4"
 
 typedef struct app_settings_s {
   int incrementBy;
@@ -75,6 +75,7 @@ int main (int argc, char *argv[])
   json_object * joPatch;
   json_object * joMinor;
   json_object * joMajor;
+  json_object * joPrerelease;
 
 //-------------------------
 
@@ -93,6 +94,7 @@ int main (int argc, char *argv[])
   version_info_load_major(&vi, &jobj);
   version_info_load_minor(&vi, &jobj);
   version_info_load_patch(&vi, &jobj);
+  version_info_load_field_str(&vi, &jobj, "prerelease", &vi.prerelease);
 
   if (argc >= 3) {
     str_set(&fieldToIncrement, argv[2]);
@@ -130,7 +132,11 @@ int main (int argc, char *argv[])
         bflag = 1;
         break;
       case 's':
-        fprintf(stdout, "%d.%d.%d\n", vi.major, vi.minor, vi.patch);
+        fprintf(stdout, "%d.%d.%d", vi.major, vi.minor, vi.patch);
+        if (vi.prerelease != NULL && strlen(vi.prerelease)>0)
+          fprintf(stdout, "-%s", vi.prerelease);
+
+        fprintf(stdout, "\n");
         break;
       case 'f':
         cvalue = optarg;

@@ -23,6 +23,8 @@
 # include <unistd.h>
 
 #include "utils.h"
+#include "util_files.h"
+#include "utils_json.h"
 
 void show_usage(const char* appName, int exitApp, int exitCode) {
   char* usageStr;
@@ -45,9 +47,11 @@ int json_object_is_boolean(json_object* jo) {
   return (json_object_is_type(jo, json_type_boolean) ? TRUE : FALSE);
 }
 
-int json_object_is_array(json_object* jo) {
-  return (json_object_is_type(jo, json_type_array) ? TRUE : FALSE);
-}
+
+//int json_object_is_array(json_object* jo) {
+//  return (json_object_is_type(jo, json_type_array) ? TRUE : FALSE);
+//}
+
 
 int json_object_is_int(json_object* jo) {
   return (json_object_is_type(jo, json_type_int) ? TRUE : FALSE);
@@ -59,7 +63,7 @@ int json_object_is_object(json_object* jo) {
 }
 
 
-json_object* get_object_item(json_object* jo, char * name)
+/*json_object* get_object_item(json_object* jo, char * name)
 {
   json_object_object_foreach(jo, key, val) {
     if (strcmp(key, name)==0) {
@@ -67,9 +71,9 @@ json_object* get_object_item(json_object* jo, char * name)
     }
   }
   return FALSE;
-}
+}*/
 
-int json_object_has_item(json_object* jo, char* name)
+/*int json_object_has_item(json_object* jo, char* name)
 {
   json_object_object_foreach(jo, key, val) {
     if (strcmp(key, name)==0) {
@@ -77,7 +81,7 @@ int json_object_has_item(json_object* jo, char* name)
     }
   }
   return FALSE;
-}
+}*/
 
 
 
