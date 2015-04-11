@@ -19,7 +19,7 @@ A group of utility applications to make working with the JSON file format easier
 
   `jsonread` can read fields in the given JSON file, even if they are nested in an array or object.
   Given the following JSON file:
-```
+```javascript
 {
   "obj": {
     "sub1": {
@@ -37,7 +37,7 @@ A group of utility applications to make working with the JSON file format easier
   `jsonread` can also access array items:
 
   Given the following JSON file:
-```
+```javascript
 {
   "my_array":[
     [2,3,4],
@@ -61,7 +61,7 @@ A group of utility applications to make working with the JSON file format easier
 The syntax is `jsonwrite file.json field [sub-field, ...] new_value`
 
   - `$ jsonwrite test.json hello world "hello world!"` writes the following JSON to test.json:
-```
+```javascript
 {
   "hello":{
     "world":"hello world!"
@@ -73,7 +73,7 @@ You may specify an unlimited number of sub fields, such as:
 
 You may also just specify one field:
   - `$ jsonwrite test.json hello "world"` which writes the following to test.json:
-```
+```javascript
 {
   "hello":"world"
 }
@@ -86,7 +86,7 @@ You may also just specify one field:
 
 Given the following JSON file, `app-version.json`:
 
-```
+```javascript
 {
   "major":7,
   "minor":1,
@@ -110,7 +110,7 @@ Given the following `test.json` file:
 {"hello":{"world":"hello world!"}}
 ```
   - `$ jsonpp test.json` outputs the following:
-```
+```javascript
 {
   "hello":{
     "world":"hello world!"
