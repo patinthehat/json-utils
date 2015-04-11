@@ -17,6 +17,14 @@ A group of utility applications to make working with the JSON file format easier
 `json-utils` requires the `json-c` library, which can be found on GitHub: https://github.com/json-c/json-c
 
 ---
+### Building json-utils ###
+  To compile `json-utils`, simply run make:
+
+  `$ make all`
+
+  The compiled files will be located in `./build/`.
+
+---
 ### Examples ###
 ---
 #### jsonread ####
