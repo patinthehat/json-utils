@@ -106,7 +106,7 @@ Calling `jsonsemver` with the `-s` parameter outputs the version string ONLY, an
 `jsonpp` is a simple utility that pretty-prints the contents of a JSON file.
 
 Given the following `test.json` file:
-```
+```javascript
 {"hello":{"world":"hello world!"}}
 ```
   - `$ jsonpp test.json` outputs the following:
