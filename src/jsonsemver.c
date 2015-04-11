@@ -59,7 +59,7 @@ char * str_new_set(char ** str, int size, char * strCopy)
 
 int main (int argc, char *argv[])
 {
-  int aflag = 0;
+  int flag_debug = 0;
   int bflag = 0;
   char *cvalue = NULL;
   char * cfn;
@@ -71,7 +71,7 @@ int main (int argc, char *argv[])
   version_info vi;
   version_info * vip = &vi;
 
-  json_object* jobj = json_object_from_file(cfilename);
+  json_object* jobj;
   json_object * joPatch;
   json_object * joMinor;
   json_object * joMajor;
@@ -83,6 +83,13 @@ int main (int argc, char *argv[])
 
   zero_fill((void**)&vip, sizeof(vi));
 
+  if (!file_exists(cfn)) {
+    string_free(&fieldToIncrement);
+    string_free(&cfn);
+    show_message( "File not found.", TRUE, -1);
+  }
+
+  jobj = json_object_from_file(cfilename);
   version_info_load_major(&vi, &jobj);
   version_info_load_minor(&vi, &jobj);
   version_info_load_patch(&vi, &jobj);
@@ -107,22 +114,23 @@ int main (int argc, char *argv[])
 
   file_write_data(cfn, json_object_to_json_string_ext(jobj, JSON_C_TO_STRING_PLAIN));
 
-  debug_version_info(&vi);
-
   string_free(&fieldToIncrement);
   string_free(&cfn);
 
-  return 0;
+  //return 0;
 
   opterr = 0;
-  while ((c = getopt (argc, argv, "abf:")) != -1)
+  while ((c = getopt (argc, argv, "dbf:s")) != -1)
     switch (c)
       {
-      case 'a':
-        aflag = 1;
+      case 'd':
+        flag_debug = 1;
         break;
       case 'b':
         bflag = 1;
+        break;
+      case 's':
+        fprintf(stdout, "%d.%d.%d\n", vi.major, vi.minor, vi.patch);
         break;
       case 'f':
         cvalue = optarg;
@@ -140,10 +148,15 @@ int main (int argc, char *argv[])
       default:
         abort ();
       }
-  printf ("aflag = %d, bflag = %d, cvalue = %s\n",
-          aflag, bflag, cvalue);
+ // printf ("flag_debug = %d, bflag = %d, cvalue = %s\n",
+ //     flag_debug, bflag, cvalue);
+  if (flag_debug)
+    for (index = optind; index < argc; index++)
+      printf ("Non-option argument %s\n", argv[index]);
 
-  for (index = optind; index < argc; index++)
-    printf ("Non-option argument %s\n", argv[index]);
+  if (flag_debug)
+    debug_version_info(&vi);
+
+
   return 0;
 }
