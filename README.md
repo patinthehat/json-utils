@@ -13,6 +13,10 @@ A group of utility applications to make working with the JSON file format easier
 
 ---
 
+### Requirements ###
+`json-utils` requires the `json-c` library, which can be found on GitHub: https://github.com/json-c/json-c
+
+---
 ### Examples ###
 ---
 #### jsonread ####
